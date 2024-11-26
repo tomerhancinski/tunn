@@ -51,15 +51,9 @@ tunnel::~tunnel() {
 }
 
 // Read a packet from the TUN interface
-void tunnel::readPacket() {
-    uint8_t buffer[4096];  // buffer for the incoming packet
-    ssize_t length = read(tun_fd, buffer, sizeof(buffer));
-    if (length < 0) {
-        perror("Error reading from TUN interface");
-        return;
-    }
-
-    std::cout << "[Received Packet] Length: " << length << " bytes\n";
+void tunnel::readPacket( uint8_t* buffer, size_t length) {
+ 
+  //  std::cout << "[Received Packet] Length: " << length << " bytes\n";
 
     const struct iphdr* ip_header = reinterpret_cast<const struct iphdr*>(buffer);
 
@@ -67,8 +61,8 @@ void tunnel::readPacket() {
     src_ip.s_addr = ip_header->saddr;
     dst_ip.s_addr = ip_header->daddr;
 
-    std::cout << "[Encapsulated Packet] Source IP: " << inet_ntoa(src_ip)
-              << ", Destination IP: " << inet_ntoa(dst_ip) << "\n";
+   // std::cout << "[Encapsulated Packet] Source IP: " << inet_ntoa(src_ip)
+   //           << ", Destination IP: " << inet_ntoa(dst_ip) << "\n";
 
     // Check if the protocol is UDP
     if (ip_header->protocol == IPPROTO_UDP) {
@@ -78,8 +72,8 @@ void tunnel::readPacket() {
         uint16_t src_port = ntohs(udp_header->source);
         uint16_t dst_port = ntohs(udp_header->dest);
 
-        std::cout << "[Encapsulated Packet] UDP Source Port: " << src_port
-                  << ", UDP Destination Port: " << dst_port << "\n";
+      //  std::cout << "[Encapsulated Packet] UDP Source Port: " << src_port
+      //            << ", UDP Destination Port: " << dst_port << "\n";
 
         // Prepare a response message
         const char response[] = "Hello from TUN interface!";
@@ -147,4 +141,8 @@ unsigned short tunnel::csum(unsigned short *buf, int len) {
     sum = (sum >> 16) + (sum & 0xFFFF);  // Fold 32-bit sum to 16 bits
     sum += (sum >> 16);
     return ~sum;  // One's complement
+}
+
+int tunnel::getFD() const {
+    return tun_fd;
 }
