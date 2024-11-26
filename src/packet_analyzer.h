@@ -6,11 +6,6 @@
 
 class PacketAnalyzer {
 public:
-    // Constructor
-    PacketAnalyzer();
-
-    // Destructor
-    ~PacketAnalyzer();
 
     // Analyze and log packet details
     void analyzeAndLog(const uint8_t* packet, size_t length);
@@ -25,8 +20,7 @@ private:
     // Convert protocol number to string (e.g., 6 -> TCP)
     std::string protocolToString(uint8_t protocol);
 
-    // Log helper
-    void log(const std::string& message);
+  
 };
 
 #endif // PACKET_ANALYZER_H
