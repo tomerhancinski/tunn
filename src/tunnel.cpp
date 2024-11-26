@@ -110,8 +110,8 @@ void tunnel::readPacket( uint8_t* buffer, size_t length) {
         // Send the response packet
         sendPacket(response_packet, sizeof(struct iphdr) + sizeof(struct udphdr) + sizeof(response));
     } else {
-        std::cout << "[Encapsulated Packet] Protocol: " << static_cast<int>(ip_header->protocol)
-                  << " (Not UDP, no port information available)\n";
+      //  std::cout << "[Encapsulated Packet] Protocol: " << static_cast<int>(ip_header->protocol)
+      //            << " (Not UDP, no port information available)\n";
     }
 }
 

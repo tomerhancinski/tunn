@@ -9,6 +9,8 @@
 
 
 void PacketAnalyzer::analyzeAndLog(const uint8_t* packet, size_t length) {
+
+    std::cout << "--------------------------" << std::endl;
     if (length < 1) {
         std::cout << "Packet is too small to analyze." << std::endl;
         return;
@@ -25,6 +27,7 @@ void PacketAnalyzer::analyzeAndLog(const uint8_t* packet, size_t length) {
         default:
             std::cout << "Unknown IP version: " + std::to_string(version) << std::endl;
     }
+     
 }
 
 void PacketAnalyzer::handleIPv4(const uint8_t* packet, size_t length) {
@@ -41,11 +44,11 @@ void PacketAnalyzer::handleIPv4(const uint8_t* packet, size_t length) {
     inet_ntop(AF_INET, &ip_header->daddr, dst_ip, INET_ADDRSTRLEN);
 
     std::string protocol = protocolToString(ip_header->protocol);
-
-    std::cout << "IPv4 Packet:" << std::endl;
+   
+    std::cout << "Protocol: " + protocol << std::endl;
+    std::cout << "  IPv4 Packet" << std::endl;
     std::cout << "  Source IP: " + std::string(src_ip) << std::endl;
     std::cout << "  Destination IP: " + std::string(dst_ip) << std::endl;
-    std::cout << "  Protocol: " + protocol << std::endl;
     std::cout << "  Total Length: " + std::to_string(ntohs(ip_header->tot_len)) << std::endl;
 
     if (ip_header->protocol == IPPROTO_TCP && length >= ip_header->ihl * 4 + sizeof(struct tcphdr)) {
@@ -71,21 +74,27 @@ void PacketAnalyzer::handleIPv6(const uint8_t* packet, size_t length) {
     char dst_ip[INET6_ADDRSTRLEN];
     inet_ntop(AF_INET6, &ip6_header->ip6_src, src_ip, INET6_ADDRSTRLEN);
     inet_ntop(AF_INET6, &ip6_header->ip6_dst, dst_ip, INET6_ADDRSTRLEN);
-
-    std::cout << "IPv6 Packet:" << std::endl;
+    
+    std::cout << "Next Header (Protocol): " + std::to_string(ip6_header->ip6_nxt) << std::endl;   
+    std::cout << "  IPv6 Packet" << std::endl;
     std::cout << "  Source IP: " + std::string(src_ip) << std::endl;
     std::cout << "  Destination IP: " + std::string(dst_ip) << std::endl;
-    std::cout << "  Next Header (Protocol): " + std::to_string(ip6_header->ip6_nxt) << std::endl;
     std::cout << "  Payload Length: " + std::to_string(ntohs(ip6_header->ip6_plen)) << std::endl;
 }
 
 
 std::string PacketAnalyzer::protocolToString(uint8_t protocol) {
     switch (protocol) {
-        case IPPROTO_TCP: return "TCP";
-        case IPPROTO_UDP: return "UDP";
-        case IPPROTO_ICMP: return "ICMP";
-        case IPPROTO_IPV6: return "IPv6";
-        default: return "Unknown";
+        case IPPROTO_TCP:   return "TCP";
+        case IPPROTO_UDP:   return "UDP";
+        case IPPROTO_ICMP:  return "ICMP";
+        case IPPROTO_IPV6:  return "IPv6";
+        case IPPROTO_IPIP:  return "IP-in-IP";
+        case IPPROTO_GRE:   return "GRE";
+        case IPPROTO_SCTP:  return "SCTP";
+        case IPPROTO_RAW:   return "RAW";
+        case IPPROTO_ESP:   return "ESP";
+        case IPPROTO_AH:    return "AH"; 
+        default:            return "Unknown";
     }
 }
