@@ -51,7 +51,7 @@ tunnel::~tunnel() {
 }
 
 // Read a packet from the TUN interface
-void tunnel::readPacket( uint8_t* buffer, size_t length) {
+void tunnel::modifyAndForwardPacket( uint8_t* buffer, size_t length) {
  
   //  std::cout << "[Received Packet] Length: " << length << " bytes\n";
 
@@ -122,6 +122,20 @@ void tunnel::sendPacket(const uint8_t* buffer, size_t length) {
         perror("[Error Sending Packet] Writing to TUN interface failed");
     } else {
         std::cout << "[Sending Packet] Successfully wrote " << written << " bytes to the TUN interface\n";
+    }
+}
+
+// Read a packet from the TUN interface and store it in the provided buffer
+// Returns the number of bytes read (size_t), or -1 if there's an error
+ssize_t tunnel::readPacket(uint8_t* buffer, size_t buffer_length) {
+    ssize_t length = read(tun_fd, buffer, buffer_length);
+
+    if (length < 0) {
+        perror("[Error Reading Packet] Failed to read from TUN interface");
+        return -1;  // Indicate failure
+    } else {
+        std::cout << "[Reading Packet] Successfully read " << length << " bytes from TUN interface\n";
+        return length;  // Return the number of bytes read
     }
 }
 

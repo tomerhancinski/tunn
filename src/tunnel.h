@@ -18,10 +18,12 @@ public:
     ~tunnel();
 
     // Read a packet from the TUN interface
-    void readPacket(uint8_t* buffer, size_t length);
+    void modifyAndForwardPacket(uint8_t* buffer, size_t length);
 
     // Send a packet to the TUN interface
     void sendPacket(const uint8_t* buffer, size_t length);
+
+    ssize_t readPacket(uint8_t* buffer, size_t buffer_length);
 
     // Calculate checksum (for IP header)
     unsigned short csum(unsigned short *buf, int len);
