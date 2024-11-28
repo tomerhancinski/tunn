@@ -1,11 +1,38 @@
 #include <iostream>
 #include <vector>
 #include "tunnel.h"
-#include "packet_analyzer.h"
+#include "PacketAnalyzer.h"
+#include "NcClient.h"
+int maintest()
+{
+     // Create an NcClient instance
+    NcClient client("127.0.0.1", 9999);
+
+    // Connect to the server
+    if (!client.connectToServer()) {
+        return -1;
+    }
+
+    // Send a message to the server
+    client.sendMessage("Hello, nc server!\n");
+
+    // Receive a message from the server
+    std::string response = client.receiveMessage();
+
+    if (!response.empty()) {
+        std::cout << "Server response: " << response << "\n";
+    }
+    return 1;
+}
 
 int main() {
+    
+   // maintest();
+    
     // Create tunnel object for interacting with the TUN interface
     tunnel tun("tun0");
+
+
 
     // Create packet analyzer object to handle packet parsing and logging
     PacketAnalyzer analyzer;
@@ -27,6 +54,8 @@ int main() {
             std::cout << "No packet available to read. Waiting..." << std::endl;
             continue;  // Continue if no packet was received
         }
+
+
 
         // Analyze and log the packet
         analyzer.analyzeAndLog(buffer, length);
